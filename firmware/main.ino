@@ -69,8 +69,57 @@ void showBoot() {
   showClock();
 }
 
+void showClock() {
+  tft.fillScreen(ST77XX_BLACK);
 
+  tft.setTextColor(ST77XX_WHITE);
+  tft.setTextSize(4);
+  tft.setCursor(20, 12);
+  tft.print("07:30");
 
+  tft.setTextSize(1);
+  tft.setCursor(105, 58);
+  tft.print("ALARM OFF");
+}
+
+void scanButtons() {
+  for (int r = 0; r < 3; r++) {
+    for (int i = 0; i < 3; i++) {
+      digitalWrite(rows[i], HIGH);
+    }
+
+    digitalWrite(rows[r], LOW);
+    delayMicroseconds(50);
+
+    for (int c = 0; c < 3; c++) {
+      bool pressed = digitalRead(cols[c])
+
+      if (pressed && !lastState[r][c] && millis() - lastPress > 100) {
+        lastPress = millis();
+        buttonPressed(r, c);
+      }
+
+      lastState[r][c] = pressed;
+    }
+  }
+}
+
+void buttonPressed(int row, int col) {
+  int button = row * 3 + col + 1;
+
+  Serial.print("Button ");
+  Serial.print(button);
+  Serial.println(" pressed");
+
+  tone(BUZZER, 2000, 60);
+
+  tft.fillRect(0, 58, 284, 18, ST77XX_BLACK);
+  tft.setTextColor(ST77XX_WHITE);
+  tft.setTextSize(1);
+  tft.setCursor(8, 64);
+  tft.print("BUTTON ");
+  tft.print(button);
+}
 
 
 
